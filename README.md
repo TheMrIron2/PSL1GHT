@@ -31,10 +31,14 @@ a patched newlib environment; at the moment only one toolchain does so:
 * [ps3toolchain](http://github.com/ps3dev/ps3toolchain)
 
 The SDK also includes a few standalone tools to help compilation. A host gcc
-is required to build raw2h, ps3load, and sprxlinker requires libelf. ps3load
-requires zlib installed. Python 2.x is required to run fself.py, sfo.py, and
-pkg.py. Nvidia's [Cg Toolkit](http://developer.nvidia.com/object/cg_toolkit.html)
-is required for compiling vertex programs. The signing tools require libgmp.
+and g++ are required to build the native helper tools. sprxlinker requires
+libelf, ps3load requires zlib, and the signing tools require zlib, libgmp, and
+OpenSSL libcrypto development files. Python 3 is preferred for fself.py,
+sfo.py, and pkg.py.
+
+Nvidia's [Cg Toolkit](http://developer.nvidia.com/object/cg_toolkit.html) is
+only required for compiling Cg shader programs. Doxygen is only required when
+regenerating the API documentation.
 
 Most of the PSL1GHT samples included in the samples/ directory require various
 libraries from [ps3libraries](http://github.com/ps3dev/ps3libraries) to be
@@ -43,18 +47,39 @@ installed.
 Building
 --------
 
-Run make install in the psl1ght directory to build it all, and make sure to
-set the environment variable $PSL1GHT to the folder where you wish to
-install it to, for example...
+PSL1GHT uses two different prefixes:
+
+* `PS3DEV` is the ps3toolchain install prefix. If it is not set, PSL1GHT falls
+  back to `DEVKITPS3`, then `/usr/local/ps3dev`.
+* `PSL1GHT` is this SDK's install prefix. Headers, libraries, and the shared
+  make rules are copied there for applications and samples to use.
+
+Run the dependency check before building so missing tools are reported up
+front:
 
     cd /path/to/psl1ght.git/
+    export PS3DEV=/usr/local/ps3dev
     export PSL1GHT=/path/to/psl1ght.git/build
+    make check-deps
     make install-ctrl
     make
     make install
 
-... for a local build of it. Ensure that $PSL1GHT is set when you are
-building any of the examples or other apps that use PSL1GHT.
+`make doctor` is an alias for `make check-deps`. Ensure that `$PSL1GHT` is set
+when you are building any of the examples or other apps that use PSL1GHT.
+
+Known Gaps
+----------
+
+This repository still carries some older workflow debt that should be handled
+in follow-up changes:
+
+- PS3DEV fallback logic is duplicated across several rule and tool Makefiles.
+- Some samples reference `$(PSL1GHT)/host/ppu.mk`, which is not installed by
+  this tree.
+- Generated Doxygen HTML is checked in under `docs/`; the project should decide
+  whether generated documentation remains tracked.
+- There is no CI or containerised build path yet.
 
 Current Status
 --------------
