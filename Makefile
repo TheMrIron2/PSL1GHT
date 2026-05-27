@@ -6,12 +6,15 @@
 
 .DEFAULT_GOAL := all
 
-.PHONY: samples check-deps doctor
+.PHONY: samples check-deps doctor bootstrap-toolchain
 
 check-deps:
 	@sh tools/check-deps.sh
 
 doctor: check-deps
+
+bootstrap-toolchain:
+	@sh tools/bootstrap-ps3toolchain.sh
 
 all: check-deps
 	@$(MAKE_COMMAND) -C ppu --no-print-directory

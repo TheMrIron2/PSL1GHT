@@ -50,7 +50,8 @@ Building
 PSL1GHT uses two different prefixes:
 
 * `PS3DEV` is the ps3toolchain install prefix. If it is not set, PSL1GHT falls
-  back to `DEVKITPS3`, then `/usr/local/ps3dev`.
+  back to `DEVKITPS3`, then `~/ps3dev` on macOS or `/usr/local/ps3dev`
+  elsewhere.
 * `PSL1GHT` is this SDK's install prefix. Headers, libraries, and the shared
   make rules are copied there for applications and samples to use.
 
@@ -58,8 +59,8 @@ Run the dependency check before building so missing tools are reported up
 front:
 
     cd /path/to/psl1ght.git/
-    export PS3DEV=/usr/local/ps3dev
     export PSL1GHT=/path/to/psl1ght.git/build
+    make bootstrap-toolchain
     make check-deps
     make install-ctrl
     make
@@ -67,6 +68,22 @@ front:
 
 `make doctor` is an alias for `make check-deps`. Ensure that `$PSL1GHT` is set
 when you are building any of the examples or other apps that use PSL1GHT.
+
+If `make check-deps` reports that the PPU or SPU compilers are missing, install
+ps3toolchain first. PSL1GHT provides an explicit opt-in helper for this:
+
+    make bootstrap-toolchain
+
+The bootstrap helper clones [ps3toolchain](https://github.com/ps3dev/ps3toolchain)
+and runs its upstream `toolchain.sh`. It does not run automatically as part of
+`make` or `make install`, and it does not run `sudo`; set `PS3DEV` to a writable
+prefix or follow ps3toolchain's sudo instructions if your system requires a
+privileged `/usr/local/ps3dev` install. You can override the clone location with
+`PS3TOOLCHAIN_DIR` and the repository URL with `PS3TOOLCHAIN_REPO`.
+
+On macOS with Homebrew, install ps3toolchain's host dependencies first:
+
+    brew install autoconf automake bison flex gcc gmp libelf libtool ncurses openssl pkg-config texinfo wget zlib
 
 Known Gaps
 ----------
@@ -79,7 +96,8 @@ in follow-up changes:
   not provided by the current librsx headers.
 - Generated Doxygen HTML is checked in under `docs/`; the project should decide
   whether generated documentation remains tracked.
-- There is no CI or containerised build path yet.
+- CI now builds ps3toolchain and PSL1GHT, but it does not yet build the full
+  sample tree or publish release archives automatically.
 
 Current Status
 --------------

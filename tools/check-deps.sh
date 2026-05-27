@@ -158,6 +158,9 @@ if [ -n "$PS3DEV" ]; then
 elif [ -n "$DEVKITPS3" ]; then
 	resolved_ps3dev=$DEVKITPS3
 	ps3dev_source=DEVKITPS3
+elif [ "$(uname -s 2>/dev/null)" = Darwin ]; then
+	resolved_ps3dev=${HOME:-/tmp}/ps3dev
+	ps3dev_source="macOS default"
 else
 	resolved_ps3dev=/usr/local/ps3dev
 	ps3dev_source=default
@@ -196,6 +199,7 @@ if [ "$errors" -ne 0 ]; then
 	say ""
 	say "Dependency check failed with $errors error(s) and $warnings warning(s)."
 	say "Most missing PPU/SPU tools are fixed by building ps3toolchain, then exporting PS3DEV to that install prefix."
+	say "You can opt in to that bootstrap with: make bootstrap-toolchain"
 	exit 1
 fi
 
