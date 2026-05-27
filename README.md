@@ -75,8 +75,8 @@ This repository still carries some older workflow debt that should be handled
 in follow-up changes:
 
 - PS3DEV fallback logic is duplicated across several rule and tool Makefiles.
-- Some samples reference `$(PSL1GHT)/host/ppu.mk`, which is not installed by
-  this tree.
+- The camera sample still uses the older `rsx/reality.h` interface, which is
+  not provided by the current librsx headers.
 - Generated Doxygen HTML is checked in under `docs/`; the project should decide
   whether generated documentation remains tracked.
 - There is no CI or containerised build path yet.

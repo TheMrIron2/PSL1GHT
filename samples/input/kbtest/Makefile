@@ -3,7 +3,7 @@ ifeq ($(strip $(PSL1GHT)),)
 $(error "PSL1GHT must be set in the environment.")
 endif
 
-include $(PSL1GHT)/host/ppu.mk
+include $(PSL1GHT)/ppu_rules
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
@@ -17,8 +17,9 @@ APPID		:=	TEST0KB01
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 PKGFILES	:=	release
 
-CFLAGS		+= -O2 -Wall -std=gnu99
-CXXFLAGS	+= -O2 -Wall
+CFLAGS		+= -O2 -Wall -std=gnu99 $(MACHDEP) $(INCLUDES)
+CXXFLAGS	+= -O2 -Wall $(MACHDEP) $(INCLUDES)
+LDFLAGS		+= $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
@@ -49,7 +50,10 @@ export OFILES	:=	$(CFILES:.c=.o) \
 export BINFILES	:=	$(BINFILES:.bin=.bin.h)
 
 export INCLUDES	:=	$(foreach dir,$(INCLUDE),-I$(CURDIR)/$(dir)) \
+					$(LIBPSL1GHT_INC) \
 					-I$(CURDIR)/$(BUILD)
+
+export LIBPATHS	:=	$(LIBPSL1GHT_LIB)
 
 .PHONY: $(BUILD) clean pkg run
 
